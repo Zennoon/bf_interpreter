@@ -12,11 +12,16 @@
  */
 char *looper(char *command_ptr, int *array, int *idx)
 {
+	int nested = 0;
 	size_t i = 0;
 	char *looped_commands = malloc(sizeof(char));
 
-	while (command_ptr && *command_ptr != ']')
+	while (command_ptr && (*command_ptr != ']' || nested != 0))
 	{
+		if (*command_ptr == '[')
+			nested++;
+		else if (*command_ptr == ']')
+			nested--;
 		looped_commands[i] = *command_ptr;
 		i++;
 		looped_commands = realloc(looped_commands, i + 1);
@@ -25,6 +30,7 @@ char *looper(char *command_ptr, int *array, int *idx)
 	looped_commands[i] = '\0';
 	while (array[*idx] != 0)
 		execute_commands(looped_commands, array, idx);
+	free(looped_commands);
 	return (command_ptr);
 }
 
