@@ -1,6 +1,32 @@
 #include "bf.h"
 
-#define ARR_SIZE 30000
+#define ARR_SIZE 300
+
+/**
+ * looper - Loops (executes some commands) until current index has a value of 0.
+ * @command_ptr: Pointer to the current command (character)
+ * @array: The array being operated on
+ * @idx: Pointer to the current index of the array
+ *
+ * Return: Pointer to the command immediately after the loop terminates
+ */
+char *looper(char *command_ptr, int *array, int *idx)
+{
+	size_t i = 0;
+	char *looped_commands = malloc(sizeof(char));
+
+	while (command_ptr && *command_ptr != ']')
+	{
+		looped_commands[i] = *command_ptr;
+		i++;
+		looped_commands = realloc(looped_commands, i + 1);
+		command_ptr++;
+	}
+	looped_commands[i] = '\0';
+	while (array[*idx] != 0)
+		execute_commands(looped_commands, array, idx);
+	return (command_ptr);
+}
 
 /**
  * execute_commands - Executes the commands stored in a string
@@ -12,6 +38,39 @@
  * Return: void
  */
 void execute_commands(char *commands, int *array, int *idx)
+{
+	while (commands && *commands)
+	{
+		switch (*commands)
+		{
+		case '>':
+			*idx += 1;
+			break;
+		case '<':
+			*idx -= 1;
+			break;
+		case '+':
+			array[*idx] += 1;
+			break;
+		case '-':
+			array[*idx] -= 1;
+			break;
+		case '.':
+			printf("%c", array[*idx]);
+			break;
+		case ',':
+			scanf("%d", &(array[*idx]));
+			break;
+		case '[':
+			commands++;
+			commands = looper(commands, array, idx);
+			if (!commands)
+				commands--;
+			break;
+		}
+		commands++;
+	}
+}
 
 /**
  * main - The entry point of the program
@@ -23,7 +82,7 @@ void execute_commands(char *commands, int *array, int *idx)
 int main(int argc, char **argv)
 {
 	char *commands;
-	int array[30000], idx = 0;
+	int array[ARR_SIZE], idx = 0, i;
 
 	if (argc < 2)
 	{
@@ -32,7 +91,11 @@ int main(int argc, char **argv)
 	}
 	for (idx = 0; idx < ARR_SIZE; idx++)
 		array[idx] = 0;
+	idx = 0;
 	commands = read_file(argv[1]);
-	execute_commands(commands, array, *idx);
+	execute_commands(commands, array, &idx);
+	for (i = 0; i < ARR_SIZE; i++)
+		printf("%d ", array[i]);
+	free(commands);
 	return (EXIT_SUCCESS);
 }
