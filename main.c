@@ -88,20 +88,32 @@ void execute_commands(char *commands, int *array, int *idx)
 int main(int argc, char **argv)
 {
 	char *commands;
-	int array[ARR_SIZE], idx = 0, i;
+	int array[ARR_SIZE], idx = 0;
 
 	if (argc < 2)
 	{
-		printf("Usage: ./bf_interpreter filename\n");
+		printf("Usage:\n\t./bf_interpreter filename\n");
+		printf("\t./bf_interpreter -c command\n");
 		exit(EXIT_FAILURE);
 	}
 	for (idx = 0; idx < ARR_SIZE; idx++)
 		array[idx] = 0;
 	idx = 0;
-	commands = read_file(argv[1]);
-	execute_commands(commands, array, &idx);
-	for (i = 0; i < ARR_SIZE; i++)
-		printf("%d ", array[i]);
-	free(commands);
+	if (!strcmp(argv[1], "-c"))
+	{
+		if (argc != 3)
+		{
+			printf("Usage:\n\t./bf_interpreter filename\n");
+			printf("\t./bf_interpreter -c command\n");
+			exit(EXIT_FAILURE);
+		}
+		execute_commands(argv[2], array, &idx);
+	}
+	else
+	{
+		commands = read_file(argv[1]);
+		execute_commands(commands, array, &idx);
+		free(commands);
+	}
 	return (EXIT_SUCCESS);
 }

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 
 /** Function prototypes **/
 char *read_file(char *filename);
